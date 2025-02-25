@@ -1,4 +1,4 @@
-FROM python:3.9-slim-bullseye
+FROM python:3.12-slim-bullseye
 WORKDIR /usr/src/app/
 
 ENV POETRY_HOME=/opt/poetry \
@@ -12,7 +12,7 @@ RUN poetry config virtualenvs.create true; poetry config virtualenvs.in-project 
 RUN mkdir acapy_cache_redis && touch acapy_cache_redis/__init__.py
 COPY README.md pyproject.toml poetry.lock ./
 
-RUN poetry install --no-dev
+RUN poetry install --without dev
 
 COPY docker/default.yml .
 COPY acapy_cache_redis/ acapy_cache_redis/

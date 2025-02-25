@@ -1,4 +1,4 @@
-FROM python:3.9-slim-bullseye
+FROM python:3.12-slim-bullseye
 WORKDIR /usr/src/app/
 
 ENV POETRY_HOME=/opt/poetry \
@@ -10,7 +10,7 @@ RUN curl -sSL https://install.python-poetry.org | python -
 RUN poetry config virtualenvs.create true; poetry config virtualenvs.in-project true
 
 COPY pyproject.toml poetry.lock ./
-RUN poetry install --only main
+RUN poetry install --without dev --no-root
 
 COPY tests/ tests/
 

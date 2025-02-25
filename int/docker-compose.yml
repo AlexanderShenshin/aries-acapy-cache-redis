@@ -14,8 +14,12 @@ services:
         --plugin acapy_cache_redis.v0_1
         --plugin-config-value redis_cache.connection="redis://default:test1234@172.28.0.103:6382"
         --log-level debug
+        --auto-provision
+        --wallet-name default
+        --wallet-type askar-anoncreds
+        --wallet-key "insecure, for use in demo only"
     networks:
-      - acapy_default
+      - int_default
     depends_on:
       redis-cluster:
         condition: service_completed_successfully
@@ -40,7 +44,7 @@ services:
     environment:
       - REDISCLI_AUTH=${REDIS_PASSWORD}
     networks:
-      acapy_default:
+      int_default:
         ipv4_address: 172.28.0.107
     depends_on:
       - redis-node-1
@@ -61,7 +65,7 @@ services:
     volumes:
       - ../redis_cluster.conf:/conf/redis.conf
     networks:
-      acapy_default:
+      int_default:
         ipv4_address: 172.28.0.101
 
   redis-node-2:
@@ -75,7 +79,7 @@ services:
     volumes:
       - ../redis_cluster.conf:/conf/redis.conf
     networks:
-      acapy_default:
+      int_default:
         ipv4_address: 172.28.0.102
 
   redis-node-3:
@@ -89,7 +93,7 @@ services:
     volumes:
       - ../redis_cluster.conf:/conf/redis.conf
     networks:
-      acapy_default:
+      int_default:
         ipv4_address: 172.28.0.103
     healthcheck:
       test: ["CMD-SHELL", "redis-cli -p 6382 -a ${REDIS_PASSWORD} ping | grep PONG"]
@@ -109,7 +113,7 @@ services:
     volumes:
       - ../redis_cluster.conf:/conf/redis.conf
     networks:
-      acapy_default:
+      int_default:
         ipv4_address: 172.28.0.104
 
   redis-node-5:
@@ -123,7 +127,7 @@ services:
     volumes:
       - ../redis_cluster.conf:/conf/redis.conf
     networks:
-      acapy_default:
+      int_default:
         ipv4_address: 172.28.0.105
 
   redis-node-6:
@@ -137,7 +141,7 @@ services:
     volumes:
       - ../redis_cluster.conf:/conf/redis.conf
     networks:
-      acapy_default:
+      int_default:
         ipv4_address: 172.28.0.106
 
   echo-cluster:
@@ -146,7 +150,7 @@ services:
       - "3002:3002"
     command: --host 0.0.0.0 --port 3002 --log-level debug
     networks:
-      - acapy_default
+      - int_default
     healthcheck:
       test: nc -z 0.0.0.0 3002
       interval: 1s
@@ -169,7 +173,7 @@ services:
       redis-node-3:
         condition: service_healthy
     networks:
-      - acapy_default
+      - int_default
     command: tests/cluster
 
   agent-host:
@@ -193,6 +197,10 @@ services:
         --plugin acapy_cache_redis.v0_1
         --plugin-config-value redis_cache.connection="redis://redis-host:6379/0"
         --log-level debug
+        --auto-provision
+        --wallet-name default
+        --wallet-type askar-anoncreds
+        --wallet-key "insecure, for use in demo only"
     healthcheck:
       test: curl -s -o /dev/null -w '%{http_code}' "http://localhost:3004/status/live" | grep "200" > /dev/null
       start_period: 30s
@@ -245,6 +253,6 @@ services:
     command: tests/host
 
 networks:
-  acapy_default:
+  int_default:
     external: true
     name: ${NETWORK_NAME}
